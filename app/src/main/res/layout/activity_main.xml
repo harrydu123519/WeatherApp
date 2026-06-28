@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_gradient">
@@ -14,11 +15,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_horizontal"
-            android:padding="24dp"
-            android:paddingTop="48dp"
+            android:padding="20dp"
+            android:paddingTop="44dp"
             android:paddingBottom="32dp">
 
-            <!-- Loading spinner -->
             <ProgressBar
                 android:id="@+id/progress_bar"
                 android:layout_width="48dp"
@@ -27,7 +27,6 @@
                 android:indeterminateTint="#FFFFFF"
                 android:visibility="visible" />
 
-            <!-- Main content (hidden until first load) -->
             <LinearLayout
                 android:id="@+id/content_view"
                 android:layout_width="match_parent"
@@ -43,59 +42,60 @@
                     android:layout_height="wrap_content"
                     android:text="📍 获取位置中..."
                     android:textColor="#DDFFFFFF"
-                    android:textSize="16sp"
-                    android:letterSpacing="0.03" />
+                    android:textSize="17sp"
+                    android:letterSpacing="0.02" />
 
-                <!-- Big weather emoji -->
-                <TextView
-                    android:id="@+id/tv_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="⏳"
-                    android:textSize="88sp" />
-
-                <!-- Temperature -->
+                <!-- Big temperature -->
                 <TextView
                     android:id="@+id/tv_temp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="--°C"
+                    android:layout_marginTop="2dp"
+                    android:text="--°"
                     android:textColor="#FFFFFF"
-                    android:textSize="80sp"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-light" />
+                    android:textSize="96sp"
+                    android:fontFamily="sans-serif-thin"
+                    android:includeFontPadding="false"
+                    android:lineSpacingMultiplier="0.85" />
 
-                <!-- Weather description -->
+                <!-- Description -->
                 <TextView
                     android:id="@+id/tv_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="#EEFFFFFF"
+                    android:textSize="22sp" />
+
+                <!-- Today max / min -->
+                <TextView
+                    android:id="@+id/tv_today_range"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text=""
-                    android:textColor="#DDFFFFFF"
-                    android:textSize="26sp" />
+                    android:textColor="#CCFFFFFF"
+                    android:textSize="15sp" />
 
                 <!-- Feels like -->
                 <TextView
                     android:id="@+id/tv_feels_like"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="3dp"
                     android:text=""
-                    android:textColor="#AAFFFFFF"
-                    android:textSize="15sp" />
+                    android:textColor="#99FFFFFF"
+                    android:textSize="13sp" />
 
-                <!-- Divider line -->
+                <!-- ── Section divider ── -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="28dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="#44FFFFFF" />
+                    android:layout_marginTop="26dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="#33FFFFFF" />
 
-                <!-- Detail cards row 1 -->
+                <!-- Detail cards row 1: humidity + wind -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -105,19 +105,17 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_margin="6dp"
+                        android:layout_margin="5dp"
                         android:background="@drawable/bg_card"
                         android:orientation="vertical"
                         android:gravity="center"
                         android:padding="14dp">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="湿度"
-                            android:textColor="#AAFFFFFF"
+                            android:text="💧 湿度"
+                            android:textColor="#99FFFFFF"
                             android:textSize="12sp" />
-
                         <TextView
                             android:id="@+id/tv_humidity"
                             android:layout_width="wrap_content"
@@ -125,7 +123,7 @@
                             android:layout_marginTop="6dp"
                             android:text="--"
                             android:textColor="#FFFFFF"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -133,19 +131,17 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_margin="6dp"
+                        android:layout_margin="5dp"
                         android:background="@drawable/bg_card"
                         android:orientation="vertical"
                         android:gravity="center"
                         android:padding="14dp">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="风速"
-                            android:textColor="#AAFFFFFF"
+                            android:text="💨 风速"
+                            android:textColor="#99FFFFFF"
                             android:textSize="12sp" />
-
                         <TextView
                             android:id="@+id/tv_wind"
                             android:layout_width="wrap_content"
@@ -153,13 +149,13 @@
                             android:layout_marginTop="6dp"
                             android:text="--"
                             android:textColor="#FFFFFF"
-                            android:textSize="14sp"
+                            android:textSize="13sp"
                             android:textStyle="bold"
                             android:gravity="center" />
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Detail cards row 2 -->
+                <!-- Detail cards row 2: UV + cloud -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -169,19 +165,76 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_margin="6dp"
+                        android:layout_margin="5dp"
                         android:background="@drawable/bg_card"
                         android:orientation="vertical"
                         android:gravity="center"
                         android:padding="14dp">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="气压"
-                            android:textColor="#AAFFFFFF"
+                            android:text="🌞 紫外线"
+                            android:textColor="#99FFFFFF"
                             android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/tv_uv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="--"
+                            android:textColor="#FFFFFF"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/bg_card"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="14dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="☁️ 云量"
+                            android:textColor="#99FFFFFF"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/tv_cloud"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="--"
+                            android:textColor="#FFFFFF"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Detail cards row 3: pressure + visibility -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/bg_card"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="14dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🌡 气压"
+                            android:textColor="#99FFFFFF"
+                            android:textSize="12sp" />
                         <TextView
                             android:id="@+id/tv_pressure"
                             android:layout_width="wrap_content"
@@ -189,7 +242,7 @@
                             android:layout_marginTop="6dp"
                             android:text="--"
                             android:textColor="#FFFFFF"
-                            android:textSize="14sp"
+                            android:textSize="13sp"
                             android:textStyle="bold"
                             android:gravity="center" />
                     </LinearLayout>
@@ -198,19 +251,17 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_margin="6dp"
+                        android:layout_margin="5dp"
                         android:background="@drawable/bg_card"
                         android:orientation="vertical"
                         android:gravity="center"
                         android:padding="14dp">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="能见度"
-                            android:textColor="#AAFFFFFF"
+                            android:text="👁 能见度"
+                            android:textColor="#99FFFFFF"
                             android:textSize="12sp" />
-
                         <TextView
                             android:id="@+id/tv_visibility"
                             android:layout_width="wrap_content"
@@ -218,28 +269,187 @@
                             android:layout_marginTop="6dp"
                             android:text="--"
                             android:textColor="#FFFFFF"
-                            android:textSize="14sp"
+                            android:textSize="13sp"
                             android:textStyle="bold"
                             android:gravity="center" />
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Last update -->
+                <!-- ── Forecast section divider ── -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="#33FFFFFF" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="近 3 天预报"
+                    android:textColor="#AAFFFFFF"
+                    android:textSize="12sp"
+                    android:letterSpacing="0.1"
+                    android:layout_marginBottom="6dp" />
+
+                <!-- Forecast card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp">
+
+                    <!-- Day 0 row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <TextView
+                            android:id="@+id/tv_f0_day"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="今天"
+                            android:textColor="#EEFFFFFF"
+                            android:textSize="15sp" />
+                        <TextView
+                            android:id="@+id/tv_f0_icon"
+                            android:layout_width="40dp"
+                            android:layout_height="wrap_content"
+                            android:text="⏳"
+                            android:textSize="24sp"
+                            android:gravity="center" />
+                        <TextView
+                            android:id="@+id/tv_f0_desc"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:text=""
+                            android:textColor="#CCFFFFFF"
+                            android:textSize="14sp"
+                            android:gravity="center" />
+                        <TextView
+                            android:id="@+id/tv_f0_range"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:text=""
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:gravity="end" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#22FFFFFF" />
+
+                    <!-- Day 1 row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <TextView
+                            android:id="@+id/tv_f1_day"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="明天"
+                            android:textColor="#EEFFFFFF"
+                            android:textSize="15sp" />
+                        <TextView
+                            android:id="@+id/tv_f1_icon"
+                            android:layout_width="40dp"
+                            android:layout_height="wrap_content"
+                            android:text="⏳"
+                            android:textSize="24sp"
+                            android:gravity="center" />
+                        <TextView
+                            android:id="@+id/tv_f1_desc"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:text=""
+                            android:textColor="#CCFFFFFF"
+                            android:textSize="14sp"
+                            android:gravity="center" />
+                        <TextView
+                            android:id="@+id/tv_f1_range"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:text=""
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:gravity="end" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#22FFFFFF" />
+
+                    <!-- Day 2 row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <TextView
+                            android:id="@+id/tv_f2_day"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text=""
+                            android:textColor="#EEFFFFFF"
+                            android:textSize="15sp" />
+                        <TextView
+                            android:id="@+id/tv_f2_icon"
+                            android:layout_width="40dp"
+                            android:layout_height="wrap_content"
+                            android:text="⏳"
+                            android:textSize="24sp"
+                            android:gravity="center" />
+                        <TextView
+                            android:id="@+id/tv_f2_desc"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:text=""
+                            android:textColor="#CCFFFFFF"
+                            android:textSize="14sp"
+                            android:gravity="center" />
+                        <TextView
+                            android:id="@+id/tv_f2_range"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:text=""
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:gravity="end" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Update time -->
                 <TextView
                     android:id="@+id/tv_update"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="20dp"
                     android:text=""
-                    android:textColor="#77FFFFFF"
+                    android:textColor="#66FFFFFF"
                     android:textSize="12sp" />
 
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 
-    <!-- Rain animation overlay (shown only when weather is rainy) -->
+    <!-- Rain animation overlay -->
     <com.example.weatherapp.RainView
         android:id="@+id/rain_view"
         android:layout_width="match_parent"
