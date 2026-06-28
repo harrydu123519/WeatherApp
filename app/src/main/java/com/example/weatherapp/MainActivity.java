@@ -2,6 +2,8 @@ package com.example.weatherapp;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private View contentView;
     private TextView tvLocation, tvIcon, tvTemp, tvDesc, tvFeelsLike;
     private TextView tvHumidity, tvWind, tvPressure, tvVisibility, tvUpdate;
+    private RainView rainView;
 
     private double cachedLat = 0, cachedLon = 0;
     private boolean hasLocation = false;
@@ -50,8 +54,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        progressBar = findViewById(R.id.progress_bar);
-        contentView = findViewById(R.id.content_view);
+        progressBar  = findViewById(R.id.progress_bar);
+        contentView  = findViewById(R.id.content_view);
         tvLocation   = findViewById(R.id.tv_location);
         tvIcon       = findViewById(R.id.tv_icon);
         tvTemp       = findViewById(R.id.tv_temp);
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         tvPressure   = findViewById(R.id.tv_pressure);
         tvVisibility = findViewById(R.id.tv_visibility);
         tvUpdate     = findViewById(R.id.tv_update);
+        rainView     = findViewById(R.id.rain_view);
 
         executor = Executors.newSingleThreadExecutor();
         handler  = new Handler(Looper.getMainLooper());
@@ -114,32 +119,46 @@ public class MainActivity extends AppCompatActivity {
             Location loc = null;
             try {
                 loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                if (loc == null) {
-                    loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                }
-                if (loc == null) {
-                    loc = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-                }
+                if (loc == null) loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (loc == null) loc = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
             } catch (Exception ignored) {}
 
             if (loc != null) {
-                cachedLat = loc.getLatitude();
-                cachedLon = loc.getLongitude();
+                cachedLat   = loc.getLatitude();
+                cachedLon   = loc.getLongitude();
                 hasLocation = true;
             }
         }
         fetchWeather();
     }
 
+    @SuppressWarnings("deprecation")
     private void fetchWeather() {
         executor.execute(() -> {
+            // Resolve Chinese city name in background (Geocoder is a network call)
+            String chineseCity = null;
+            if (hasLocation) {
+                try {
+                    if (Geocoder.isPresent()) {
+                        Geocoder geo = new Geocoder(MainActivity.this, Locale.SIMPLIFIED_CHINESE);
+                        List<Address> addrs = geo.getFromLocation(cachedLat, cachedLon, 1);
+                        if (addrs != null && !addrs.isEmpty()) {
+                            Address a = addrs.get(0);
+                            String city = a.getLocality();
+                            if (city == null || city.isEmpty()) city = a.getSubAdminArea();
+                            if (city == null || city.isEmpty()) city = a.getAdminArea();
+                            chineseCity = city;
+                        }
+                    }
+                } catch (Exception ignored) {}
+            }
+
+            // Fetch weather data
+            final String cityForDisplay = chineseCity;
             try {
-                String query;
-                if (hasLocation) {
-                    query = String.format(Locale.US, "%.4f,%.4f", cachedLat, cachedLon);
-                } else {
-                    query = "";   // wttr.in auto-detects by IP
-                }
+                String query = hasLocation
+                        ? String.format(Locale.US, "%.4f,%.4f", cachedLat, cachedLon)
+                        : "";
                 String endpoint = "https://wttr.in/" + query + "?format=j1";
                 URL url = new URL(endpoint);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -160,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     while ((line = br.readLine()) != null) sb.append(line);
                 }
                 conn.disconnect();
-                parseAndShow(sb.toString());
+                parseAndShow(sb.toString(), cityForDisplay);
 
             } catch (Exception e) {
                 showError("网络错误，稍后重试");
@@ -168,11 +187,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void parseAndShow(String json) {
+    private void parseAndShow(String json, String chineseCityOverride) {
         try {
-            JSONObject root     = new JSONObject(json);
-            JSONObject cur      = root.getJSONArray("current_condition").getJSONObject(0);
-            JSONObject area     = root.getJSONArray("nearest_area").getJSONObject(0);
+            JSONObject root = new JSONObject(json);
+            JSONObject cur  = root.getJSONArray("current_condition").getJSONObject(0);
+            JSONObject area = root.getJSONArray("nearest_area").getJSONObject(0);
 
             int    tempC      = Integer.parseInt(cur.getString("temp_C"));
             int    feelsLike  = Integer.parseInt(cur.getString("FeelsLikeC"));
@@ -184,14 +203,21 @@ public class MainActivity extends AppCompatActivity {
             int    code       = Integer.parseInt(cur.getString("weatherCode"));
             String descEn     = cur.getJSONArray("weatherDesc").getJSONObject(0).getString("value");
 
-            String areaName = area.getJSONArray("areaName").getJSONObject(0).getString("value");
-            String country  = area.getJSONArray("country").getJSONObject(0).getString("value");
-            String location = areaName.isEmpty() ? country : areaName + ", " + country;
+            // Prefer Geocoder Chinese name; fall back to wttr.in area name
+            String location;
+            if (chineseCityOverride != null && !chineseCityOverride.isEmpty()) {
+                location = chineseCityOverride;
+            } else {
+                String areaName = area.getJSONArray("areaName").getJSONObject(0).getString("value");
+                String country  = area.getJSONArray("country").getJSONObject(0).getString("value");
+                location = areaName.isEmpty() ? country : areaName + ", " + country;
+            }
 
-            String icon     = codeToEmoji(code);
-            String descZh   = codeToZh(code, descEn);
+            String icon      = codeToEmoji(code);
+            String descZh    = codeToZh(code, descEn);
             String windDirZh = windDirToZh(windDir);
-            String timeStr  = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+            String timeStr   = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+            boolean raining  = isRaining(code);
 
             runOnUiThread(() -> {
                 progressBar.setVisibility(View.GONE);
@@ -207,11 +233,21 @@ public class MainActivity extends AppCompatActivity {
                 tvPressure.setText("🌡  " + pressure + " hPa");
                 tvVisibility.setText("👁  " + visibility + " km");
                 tvUpdate.setText("⏱ 上次更新：" + timeStr + "  (每分钟自动刷新)");
+
+                if (raining) rainView.startRain(); else rainView.stopRain();
             });
 
         } catch (Exception e) {
             showError("数据解析失败: " + e.getMessage());
         }
+    }
+
+    private boolean isRaining(int code) {
+        return (code >= 176 && code <= 189)
+            || code == 200
+            || (code >= 263 && code <= 314)
+            || (code >= 353 && code <= 359)
+            || (code >= 386 && code <= 389);
     }
 
     private void showError(String msg) {
@@ -317,12 +353,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         handler.removeCallbacks(refreshTask);
+        rainView.stopRain();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(refreshTask);
+        rainView.stopRain();
         executor.shutdownNow();
     }
 }
